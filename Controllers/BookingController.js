@@ -243,67 +243,38 @@ module.exports = {searchFlight,BookingFlight,getTicketByuser,deleteTicketByUser,
 
 emailjs.init('wm7lvPouZwU48GNT-');
 
-const generatePDF = (booking, pdfPath) => {
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument();
-    const stream = fs.createWriteStream(pdfPath);
+const nodemailer = require('nodemailer');
+const fs = require('fs');
 
-    doc.pipe(stream);
-
-    doc.fontSize(25).text('Booking Confirmation', { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(14).text(`Username: ${booking.username}`);
-    doc.text(`Email: ${booking.email}`);
-    doc.text(`Mobile No: ${booking.mobileno}`);
-    doc.text(`Flight: ${booking.flight}`);
-    doc.text(`Price: ${booking.price}`);
-    doc.text(`Passengers: ${booking.adult_passengers.join(', ')} (Adults), ${booking.children_passengers.join(', ')} (Children)`);
-    doc.text(`Seats: ${booking.sheetnumber.join(', ')}`);
-
-    doc.end();
-
-    stream.on('finish', () => {
-      resolve();
-    });
-
-    stream.on('error', (error) => {
-      reject(error);
-    });
-  });
-};
-// Initialize the server
-const server = emailjs.server.connect({
-  user: 'your_email@example.com',
-  password: 'your_password',
-  host: 'smtp.gmail.com',
-  ssl: true
+// Email configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER, // Your email address
+    pass: process.env.EMAIL_PASS  // Your email password or app-specific password
+  }
 });
 
-// Function to send email
-const sendEmail = (toEmail, pdfPath ) => {
-  const message = {
-    text: 'Please find attached your booking confirmation.',
-    from: 'Your Name <your_email@example.com>',
-    to: `Recipient Name <${toEmail}>`,
-    subject: 'Booking Confirmation',
-    attachment: [
-      {
-        data: '<html>Please find attached your booking confirmation.</html>',
-        alternative: true
-      },
-      {
-        path: pdfPath,
-        type: 'application/pdf',
-        name: 'confirmation.pdf'
-      }
-    ]
-  };
+// Function to send email with attachment
+const sendEmail = async (recipient, pdfPath) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: recipient,
+      subject: 'Flight Booking Confirmation',
+      text: 'Please find your booking confirmation attached.',
+      attachments: [
+        {
+          filename: 'confirmation.pdf',
+          path: pdfPath,
+          contentType: 'application/pdf'
+        }
+      ]
+    };
 
-  server.send(message, (err, message) => {
-    if (err) {
-      console.error('Failed to send email', err);
-    } else {
-      console.log('Email sent successfully', message);
-    }
-  });
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+  } catch (error) {
+    console.error('Error sending email: ', error);
+  }
 };
