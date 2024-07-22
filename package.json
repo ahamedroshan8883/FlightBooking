@@ -1,0 +1,32 @@
+{
+  "name": "flightbooking",
+  "version": "1.0.0",
+  "description": "A backend software for flight booking applicaton using node,express,amadeus,etc...",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon server.js"
+  },
+  "author": "Roshan",
+  "license": "ISC",
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.3",
+    "amadeus": "^10.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "emailjs": "^4.0.3",
+    "emailjs-com": "^3.2.0",
+    "express": "^4.19.2",
+    "html-pdf": "^3.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.0",
+    "nodemailer": "^6.9.14",
+    "pdfkit": "^0.15.0",
+    "socket.io": "^4.7.5",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
